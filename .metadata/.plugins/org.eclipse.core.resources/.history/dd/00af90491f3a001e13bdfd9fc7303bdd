@@ -1,0 +1,5 @@
+package com.automationversion1.sycronization_waits;
+
+public class ExplicitlyWait {
+
+}
