@@ -1,0 +1,117 @@
+package com.automationversion1.testng;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class OrangeHRMTestng {
+	
+	Properties pr;
+	WebDriver driver;
+	
+	@BeforeSuite
+	public void dataSetup() throws IOException {
+		
+		String data_location = System.getProperty("user.dir");
+		File file = new File(data_location + "\\Testdata.Properties");
+		BufferedReader buffer = new BufferedReader(new FileReader(file));
+		pr =new Properties();
+		pr.load(buffer);
+	}
+	
+	@BeforeTest
+	public void chromeSetup() {
+		
+		WebDriverManager.chromedriver().setup();
+		
+		driver = new ChromeDriver();
+		
+		driver.manage().window().maximize();
+		
+		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		
+		driver.manage().deleteAllCookies();
+		
+		String url = pr.getProperty("url");
+		
+		driver.get(url);
+	}
+	
+	@BeforeClass
+	public void login() {
+		
+		String username = pr.getProperty("username");
+		
+		driver.findElement(By.name("username")).sendKeys(username);
+		
+		String password = pr.getProperty("password");
+		
+		driver.findElement(By.name("password")).sendKeys(password);
+		
+		driver.findElement(By.xpath("//button[.=' Login ']")).click();
+		
+		String expurl = "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index";
+		
+		String acturl = driver.getCurrentUrl();
+		
+		System.out.println("Login Page :: " + expurl.equals(acturl));
+	}
+	
+	@Test
+	public void adminPage() {
+		
+		driver.findElement(By.xpath("//span[.='Admin']")).click();
+		
+		String expurl = "https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewSystemUsers";
+		
+		String acturl = driver.getCurrentUrl();
+		
+		System.out.println("Admin Page :: " + expurl.equals(acturl));
+	}
+	
+	@Test
+	public void leavePage() {
+		driver.findElement(By.xpath("//span[.='Leave']")).click();
+		
+		String expurl = "https://opensource-demo.orangehrmlive.com/web/index.php/leave/viewLeaveList";
+		
+		String acturl = driver.getCurrentUrl();
+		
+		System.out.println("Leave Page :: " + expurl.equals(acturl));
+	}
+	
+	@AfterClass
+	public void logout() {
+		
+		driver.findElement(By.xpath("//img[@alt='profile picture']")).click();
+		
+		driver.findElement(By.xpath("//a[.='Logout']")).click();
+		
+		String expurl = "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login";
+		
+		String acturl = driver.getCurrentUrl();
+		
+		System.out.println("Logout page :: " + expurl.equals(acturl));
+	}
+	
+	@AfterTest
+	public void teardown() {
+		driver.close();
+	}
+
+}
