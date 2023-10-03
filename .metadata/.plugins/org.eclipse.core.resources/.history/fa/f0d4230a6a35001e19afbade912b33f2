@@ -1,9 +1,0 @@
-package com.automationversion1.actionsclass;
-
-import io.github.bonigarcia.wdm.WebDriverManager;
-
-public class DoubleClick {
-	
-	WebDriverManager.ch
-
-}
